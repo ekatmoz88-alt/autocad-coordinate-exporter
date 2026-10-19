@@ -1,17 +1,17 @@
-# AutoCAD text coordinate export
+# Экспорт координат подписей из AutoCAD
 
-`coord-text-export.lsp` adds the `TXTCOORD` command for exporting selected
-single-line `TEXT` entities to a semicolon-separated CSV file.
+Файл `coord-text-export.lsp` добавляет команду `TXTCOORD`. Она сохраняет
+выбранные однострочные объекты `TEXT` в CSV-файл с разделителем `;`.
 
-## Use
+## Запуск
 
-1. In AutoCAD, load `coord-text-export.lsp` with `APPLOAD`.
-2. Run `TXTCOORD`.
-3. Select the single-line text labels to export and press Enter.
-4. Choose the coordinate precision (default: 3 decimal places).
-5. Choose where to save the CSV file.
+1. В AutoCAD загрузите `coord-text-export.lsp` командой `_APPLOAD`.
+2. Запустите команду `TXTCOORD`.
+3. Выберите подписи и нажмите Enter.
+4. Укажите точность координат (по умолчанию — 3 знака после запятой).
+5. Выберите путь для сохранения CSV-файла.
 
-The output columns are `X;Y;Text`. Coordinates come from each text entity's
-insertion point and are converted to the drawing's WCS. `MTEXT` and other
-entity types are not included. Text values are quoted, with embedded double
-quotes escaped according to CSV conventions.
+В файле будут столбцы `X;Y;Text`. Координаты берутся из точки вставки текста
+и преобразуются в мировую систему координат WCS. Обрабатываются только
+однострочные `TEXT`; объекты `MTEXT` не включаются. Текстовые значения
+заключаются в кавычки, а кавычки внутри текста экранируются по правилам CSV.
