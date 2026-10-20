@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoCAD Coordinate Exporter — Документация</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --hover-color: #1f6feb;
+            --success-color: #238636;
+            --code-bg: #05070a;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+        }
+        nav {
+            width: 100%; background-color: var(--container-bg); border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .nav-container {
+            max-width: 1000px; margin: 0 auto; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo { font-weight: bold; color: var(--accent-color); font-size: 1.2rem; }
+        .nav-menu { display: flex; gap: 10px; }
+        .nav-btn {
+            background: none; border: 1px solid transparent; color: var(--text-color);
+            padding: 8px 16px; cursor: pointer; border-radius: 6px; font-size: 0.95rem; transition: all 0.2s;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            border-color: var(--border-color); background-color: #21262d; color: var(--accent-color);
+        }
+        main { max-width: 1000px; width: calc(100% - 40px); margin: 30px auto; display: flex; flex-direction: column; gap: 25px; }
+        .card { background-color: var(--container-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 30px; }
+        h1, h2, h3 { color: var(--accent-color); margin-top: 0; }
+        p { line-height: 1.6; }
+        pre { background-color: var(--code-bg); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: #ff7b72; font-family: monospace; }
+        code { color: #ff7b72; font-family: monospace; background-color: rgba(110,118,129,0.4); padding: 2px 6px; border-radius: 6px; }
+        pre code { background-color: transparent; padding: 0; color: #e6edf3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; }
+        th, td { border: 1px solid var(--border-color); padding: 12px 15px; text-align: left; }
+        th { background-color: #1f242c; color: #f0f6fc; }
+        tr:nth-child(even) { background-color: #191f28; }
+        .btn-action {
+            background-color: var(--success-color); color: white; border: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block;
+        }
+        .btn-action:hover { background-color: #2ea043; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block !important; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">📐 AutoCAD Exporter</div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="switchTab('guide', event)">Руководство</button>
+                <button class="nav-btn" onclick="switchTab('format', event)">Пример вывода</button>
+                <button class="nav-btn" onclick="switchTab('api', event)">Спецификация API</button>
+            </div>
+        </div>
+    </nav>
+    <main>
+        <div id="guide" class="tab-content active card">
+            <h1>Экспорт координат из AutoCAD</h1>
+            <p><strong>autocad-coordinate-exporter</strong> — это утилита автоматизации для инженеров и геодезистов, предназначенная для быстрого извлечения пространственных данных (X, Y, Z) из чертежей формата DWG.</p>
+            <h2>Быстрый старт</h2>
+            <p>1. Загрузите LISP-скрипт <code>coord-text-export.lsp</code> в AutoCAD с помощью команды <code>APPLOAD</code>.</p>
+            <p>2. Запустите выполнение утилиты, введя в командной строке команду:</p>
+            <pre><code>TXTCOORD</code></pre>
+            <p>3. В открывшемся диалоговом окне выберите путь для сохранения итогового файла, после чего выделите рамкой необходимые точки на чертеже.</p>
+        </div>
+        <div id="format" class="tab-content card">
+            <h2>Структура экспортируемых данных</h2>
+            <p>Ниже представлен интерактивный пример структуры файла <code>example-output.csv</code>, генерируемого скриптом при выгрузке:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Идентификатор (ID)</th>
+                        <th>Координата X</th>
+                        <th>Координата Y</th>
+                        <th>Координата Z (Высота)</th>
+                        <th>Описание / Слой</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Point_1</td><td>100.000</td><td>200.000</td><td>0.000</td><td>Test Point 1</td></tr>
+                    <tr><td>Building_A_01</td><td>150.500</td><td>250.750</td><td>12.340</td><td>Building A</td></tr>
+                    <tr><td>Corner_B</td><td>300.250</td><td>400.125</td><td>5.100</td><td>Corner B</td></tr>
+                </tbody>
+            </table>
+            <br>
+            <button class="btn-action" onclick="alert('Скачивание демонстрационного CSV-файла запущено!')">Скачать пример CSV</button>
+        </div>
+        <div id="api" class="tab-content card">
+            <h2>Техническое описание модулей программы</h2>
+            <p>Для интеграции экспортера в сторонние конвейеры обработки данных (например, через Python MCP-серверы), используйте следующие ключевые методы:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Функция / Метод</th>
+                        <th>Тип данных</th>
+                        <th>Описание назначения</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>(get-coordinates entity)</code></td>
+                        <td>AutoLISP List</td>
+                        <td>Извлекает сырой ассоциативный список геометрии точки (код DXF 10) из выбранного примитива чертежа.</td>
+                    </tr>
+                    <tr>
+                        <td><code>parse_dxf_points(file_path)</code></td>
+                        <td>Python Tuple</td>
+                        <td>Парсит внешний DXF/DWG файл без запуска самого AutoCAD и возвращает массив координат для ИИ-агентов.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script>
+        function switchTab(tabId, event) {
+            var tabs = document.querySelectorAll('.tab-content');
+            for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
+            var buttons = document.querySelectorAll('.nav-btn');
+            for (var j = 0; j < buttons.length; j++) { buttons[j].classList.remove('active'); }
+            document.getElementById(tabId).classList.add('active');
+            if(event) { event.currentTarget.classList.add('active'); }
+        }
+    </script>
+</body>
+</html>
