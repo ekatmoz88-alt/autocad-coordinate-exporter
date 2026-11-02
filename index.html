@@ -1,140 +1,15 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoCAD Coordinate Exporter — Документация</title>
-    <style>
-        :root {
-            --bg-color: #0d1117;
-            --container-bg: #161b22;
-            --border-color: #30363d;
-            --text-color: #c9d1d9;
-            --accent-color: #58a6ff;
-            --hover-color: #1f6feb;
-            --success-color: #238636;
-            --code-bg: #05070a;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0;
-            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-        }
-        nav {
-            width: 100%; background-color: var(--container-bg); border-bottom: 1px solid var(--border-color);
-            position: sticky; top: 0; z-index: 100;
-        }
-        .nav-container {
-            max-width: 1000px; margin: 0 auto; padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .logo { font-weight: bold; color: var(--accent-color); font-size: 1.2rem; }
-        .nav-menu { display: flex; gap: 10px; }
-        .nav-btn {
-            background: none; border: 1px solid transparent; color: var(--text-color);
-            padding: 8px 16px; cursor: pointer; border-radius: 6px; font-size: 0.95rem; transition: all 0.2s;
-        }
-        .nav-btn:hover, .nav-btn.active {
-            border-color: var(--border-color); background-color: #21262d; color: var(--accent-color);
-        }
-        main { max-width: 1000px; width: calc(100% - 40px); margin: 30px auto; display: flex; flex-direction: column; gap: 25px; }
-        .card { background-color: var(--container-bg); border: 1px solid var(--border-color); border-radius: 6px; padding: 30px; }
-        h1, h2, h3 { color: var(--accent-color); margin-top: 0; }
-        p { line-height: 1.6; }
-        pre { background-color: var(--code-bg); padding: 15px; border-radius: 6px; border: 1px solid var(--border-color); overflow-x: auto; color: #ff7b72; font-family: monospace; }
-        code { color: #ff7b72; font-family: monospace; background-color: rgba(110,118,129,0.4); padding: 2px 6px; border-radius: 6px; }
-        pre code { background-color: transparent; padding: 0; color: #e6edf3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.95rem; }
-        th, td { border: 1px solid var(--border-color); padding: 12px 15px; text-align: left; }
-        th { background-color: #1f242c; color: #f0f6fc; }
-        tr:nth-child(even) { background-color: #191f28; }
-        .btn-action {
-            background-color: var(--success-color); color: white; border: 1px solid rgba(240, 246, 252, 0.1);
-            padding: 10px 20px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; cursor: pointer; text-decoration: none; display: inline-block;
-        }
-        .btn-action:hover { background-color: #2ea043; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block !important; }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="nav-container">
-            <div class="logo">📐 AutoCAD Exporter</div>
-            <div class="nav-menu">
-                <button class="nav-btn active" onclick="switchTab('guide', event)">Руководство</button>
-                <button class="nav-btn" onclick="switchTab('format', event)">Пример вывода</button>
-                <button class="nav-btn" onclick="switchTab('api', event)">Спецификация API</button>
-            </div>
-        </div>
-    </nav>
-    <main>
-        <div id="guide" class="tab-content active card">
-            <h1>Экспорт координат из AutoCAD</h1>
-            <p><strong>autocad-coordinate-exporter</strong> — это утилита автоматизации для инженеров и геодезистов, предназначенная для быстрого извлечения пространственных данных (X, Y, Z) из чертежей формата DWG.</p>
-            <h2>Быстрый старт</h2>
-            <p>1. Загрузите LISP-скрипт <code>coord-text-export.lsp</code> в AutoCAD с помощью команды <code>APPLOAD</code>.</p>
-            <p>2. Запустите выполнение утилиты, введя в командной строке команду:</p>
-            <pre><code>TXTCOORD</code></pre>
-            <p>3. В открывшемся диалоговом окне выберите путь для сохранения итогового файла, после чего выделите рамкой необходимые точки на чертеже.</p>
-        </div>
-        <div id="format" class="tab-content card">
-            <h2>Структура экспортируемых данных</h2>
-            <p>Ниже представлен интерактивный пример структуры файла <code>example-output.csv</code>, генерируемого скриптом при выгрузке:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Идентификатор (ID)</th>
-                        <th>Координата X</th>
-                        <th>Координата Y</th>
-                        <th>Координата Z (Высота)</th>
-                        <th>Описание / Слой</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td>Point_1</td><td>100.000</td><td>200.000</td><td>0.000</td><td>Test Point 1</td></tr>
-                    <tr><td>Building_A_01</td><td>150.500</td><td>250.750</td><td>12.340</td><td>Building A</td></tr>
-                    <tr><td>Corner_B</td><td>300.250</td><td>400.125</td><td>5.100</td><td>Corner B</td></tr>
-                </tbody>
-            </table>
-            <br>
-            <button class="btn-action" onclick="alert('Скачивание демонстрационного CSV-файла запущено!')">Скачать пример CSV</button>
-        </div>
-        <div id="api" class="tab-content card">
-            <h2>Техническое описание модулей программы</h2>
-            <p>Для интеграции экспортера в сторонние конвейеры обработки данных (например, через Python MCP-серверы), используйте следующие ключевые методы:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Функция / Метод</th>
-                        <th>Тип данных</th>
-                        <th>Описание назначения</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>(get-coordinates entity)</code></td>
-                        <td>AutoLISP List</td>
-                        <td>Извлекает сырой ассоциативный список геометрии точки (код DXF 10) из выбранного примитива чертежа.</td>
-                    </tr>
-                    <tr>
-                        <td><code>parse_dxf_points(file_path)</code></td>
-                        <td>Python Tuple</td>
-                        <td>Парсит внешний DXF/DWG файл без запуска самого AutoCAD и возвращает массив координат для ИИ-агентов.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
-    <script>
-        function switchTab(tabId, event) {
-            var tabs = document.querySelectorAll('.tab-content');
-            for (var i = 0; i < tabs.length; i++) { tabs[i].classList.remove('active'); }
-            var buttons = document.querySelectorAll('.nav-btn');
-            for (var j = 0; j < buttons.length; j++) { buttons[j].classList.remove('active'); }
-            document.getElementById(tabId).classList.add('active');
-            if(event) { event.currentTarget.classList.add('active'); }
-        }
-    </script>
-</body>
-</html>
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="AutoLISP utility concept for exporting selected AutoCAD text labels and WCS coordinates to CSV."><title>Coordinate Exporter — AutoCAD × Data</title>
+<style>
+:root{color-scheme:dark;--bg:#080f20;--panel:#14233e;--panel2:#192b49;--ink:#edf5ff;--muted:#9aabc5;--cyan:#35d5d0;--blue:#3997ff;--lime:#d8f36a;--violet:#9d8bff;--coral:#ff766f;--line:#8ca9d329}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(ellipse at 85% 8%,#1a6c8c33,transparent 32%),radial-gradient(ellipse at 4% 35%,#714ca322,transparent 35%),var(--bg);color:var(--ink);font:15px/1.65 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--cyan);text-decoration:none}a:hover{color:var(--lime)}.wrap{width:min(1120px,calc(100% - 42px));margin:auto}.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}.brand{font-weight:850;letter-spacing:.12em;font-size:.82rem;display:flex;gap:10px;align-items:center}.mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--cyan),var(--blue),var(--violet));box-shadow:0 0 24px #35d5d055}.nav{display:flex;gap:24px}.nav a{color:var(--muted);font-size:.87rem}.hero{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:35px;padding:75px 0 70px}.kicker,.eyebrow{color:var(--lime);font-size:.73rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase}.hero h1{font-size:clamp(2.7rem,6vw,5.4rem);letter-spacing:-.06em;line-height:.98;margin:18px 0 22px}.hero h1 span{background:linear-gradient(95deg,var(--cyan),#83bfff,var(--violet));background-clip:text;color:transparent}.lead{font-size:1.1rem;color:var(--muted);max-width:570px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}.btn{padding:12px 17px;border-radius:11px;background:linear-gradient(110deg,var(--cyan),#8be8c5);color:#071726;font-weight:800;display:inline-block}.btn.ghost{background:#ffffff08;border:1px solid var(--line);color:var(--ink)}.cad{position:relative;min-height:390px;border:1px solid #7cb4d533;border-radius:22px;overflow:hidden;background:linear-gradient(145deg,#10213a,#0c1930);box-shadow:0 28px 80px #0006}.gridbg{position:absolute;inset:0;background-image:linear-gradient(#6fa4c21c 1px,transparent 1px),linear-gradient(90deg,#6fa4c21c 1px,transparent 1px);background-size:28px 28px;mask-image:linear-gradient(120deg,black,transparent 90%)}.cross{position:absolute;width:22px;height:22px}.cross:before,.cross:after{content:"";position:absolute;background:var(--coral);border-radius:4px}.cross:before{width:22px;height:2px;top:10px}.cross:after{height:22px;width:2px;left:10px}.c1{top:18%;left:13%}.c2{right:12%;bottom:18%;transform:scale(.7)}.drawing{position:absolute;inset:11% 10%;border:1px solid #35d5d077;border-radius:50%;transform:rotate(-20deg)}.drawing:before{content:"";position:absolute;inset:15% 23%;border:1px dashed var(--violet);border-radius:50%}.drawing:after{content:"";position:absolute;left:50%;top:-10%;height:120%;border-left:1px dashed #d8f36a99;transform:rotate(20deg)}.axis{position:absolute;left:50%;top:50%;width:2px;height:40%;background:linear-gradient(var(--coral),transparent);transform-origin:top;transform:rotate(90deg)}.point{position:absolute;width:11px;height:11px;border-radius:50%;background:var(--lime);box-shadow:0 0 18px var(--lime)}.p1{left:25%;top:30%}.p2{left:65%;top:22%;background:var(--cyan);box-shadow:0 0 18px var(--cyan)}.p3{left:58%;top:70%;background:var(--coral);box-shadow:0 0 18px var(--coral)}.coord{position:absolute;padding:9px 12px;border:1px solid #4e9cb966;background:#102c49dd;border-radius:9px;font: .72rem/1.5 ui-monospace,monospace;color:#b9e9ff;box-shadow:0 12px 30px #0005}.co1{top:15%;right:8%}.co2{bottom:13%;left:7%}.cadlabel{position:absolute;left:20px;bottom:18px;color:#8da8c4;font: .68rem ui-monospace,monospace;letter-spacing:.12em}.section{padding:53px 0;border-top:1px solid var(--line)}h2{font-size:clamp(1.8rem,3vw,2.6rem);line-height:1.1;letter-spacing:-.04em;margin:8px 0 15px}.sub{color:var(--muted);max-width:680px}.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:25px}.card{padding:22px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#172946e8,#101e36e8)}.num{font-size:.75rem;color:var(--cyan);font-weight:800;letter-spacing:.12em}.card h3{margin:10px 0 7px}.card p{color:var(--muted);margin:0}.sample{display:grid;grid-template-columns:.8fr 1.2fr;gap:18px;align-items:stretch;margin-top:24px}.samplebox{border:1px solid var(--line);border-radius:16px;background:#0c1930;padding:22px;overflow:hidden}.samplebox h3{margin-top:0}.csv{font: .82rem/1.9 ui-monospace,monospace;color:#c6d8ee;white-space:pre;overflow:auto}.csv .head{color:var(--lime)}.csv .value{color:var(--cyan)}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:23px}.step{padding:18px;border-left:2px solid var(--cyan);background:#ffffff06;border-radius:0 12px 12px 0}.step b{display:block;margin-bottom:5px}.step span{color:var(--muted);font-size:.9rem}.notice{margin-top:22px;padding:19px 21px;border:1px solid #d8f36a55;background:#d8f36a0b;border-radius:14px;color:var(--muted)}.notice strong{color:var(--lime)}footer{border-top:1px solid var(--line);padding:25px 0 40px;color:var(--muted);font-size:.86rem;display:flex;justify-content:space-between;gap:15px}@media(max-width:760px){.hero{grid-template-columns:1fr;padding:55px 0}.cad{min-height:320px}.cards{grid-template-columns:1fr}.sample{grid-template-columns:1fr}.steps{grid-template-columns:1fr}.nav{display:none}}@media(max-width:480px){.wrap{width:calc(100% - 30px)}.hero h1{font-size:3rem}footer{display:block}}
+</style></head><body><div class="wrap">
+<header class="top"><div class="brand"><span class="mark"></span> COORDINATE EXPORTER</div><nav class="nav"><a href="#workflow">Сценарий</a><a href="#format">CSV</a><a href="#scope">О проекте</a></nav></header>
+<main><section class="hero"><div><div class="kicker">AUTOCAD · AUTOLISP · DATA EXCHANGE</div><h1>От чертежа<br>к <span>координатам.</span></h1><p class="lead">AutoLISP-утилита для экспорта выбранных текстовых меток и координат в мировой системе координат (WCS) из AutoCAD в CSV.</p><div class="actions"><a class="btn" href="https://github.com/ekatmoz88-alt/autocad-coordinate-exporter">↗ Открыть GitHub</a><a class="btn ghost" href="#workflow">Как устроен сценарий ↓</a></div></div>
+<div class="cad" aria-label="Стилизованная CAD-сетка с точками и координатами"><div class="gridbg"></div><div class="drawing"></div><div class="axis"></div><i class="cross c1"></i><i class="cross c2"></i><i class="point p1"></i><i class="point p2"></i><i class="point p3"></i><div class="coord co1">WCS · X 150.500<br>Y 250.750<br>Z 12.340</div><div class="coord co2">TEXT LABEL<br>POINT / LOCATION</div><div class="cadlabel">MODEL SPACE / COORDINATE GRID</div></div></section>
+<section class="section" id="workflow"><div class="eyebrow">01 / Workflow</div><h2>Простой путь к табличным данным</h2><p class="sub">Назначение инструмента — вынести атрибуты выбранных текстовых объектов из чертежа в удобный для дальнейшей обработки CSV-файл.</p><div class="cards"><article class="card"><div class="num">STEP 01</div><h3>Выбрать объекты</h3><p>Отметить в чертеже текстовые метки, координаты которых нужно получить.</p></article><article class="card"><div class="num">STEP 02</div><h3>Получить WCS</h3><p>Использовать мировые координаты выбранных объектов как пространственную основу выгрузки.</p></article><article class="card"><div class="num">STEP 03</div><h3>Экспортировать CSV</h3><p>Сформировать табличный результат для просмотра и последующей обработки.</p></article></div></section>
+<section class="section" id="format"><div class="eyebrow">02 / Output concept</div><h2>Данные, готовые к работе</h2><p class="sub">Иллюстративный пример структуры координатной таблицы. Значения ниже демонстрационные, не результат реального запуска скрипта.</p><div class="sample"><div class="samplebox"><h3>CSV · Coordinate records</h3><p style="color:var(--muted)">Табличный формат помогает передавать координаты в GIS, Excel и другие инструменты обработки данных — при условии совместимости их требований к CSV.</p><div style="margin-top:18px"><span class="pill">TEXT LABELS</span> <span class="pill">WCS</span> <span class="pill">CSV</span></div></div><div class="samplebox csv"><span class="head">Label,X,Y,Z</span>
+<span class="value">Point_01,100.000,200.000,0.000</span>
+<span class="value">Building_A,150.500,250.750,12.340</span>
+<span class="value">Corner_B,300.250,400.125,5.100</span></div></div></section>
+<section class="section" id="scope"><div class="eyebrow">03 / Project scope</div><h2>Назначение и границы</h2><div class="cards"><article class="card"><div class="num">AUTOMATION</div><h3>Меньше ручного переноса</h3><p>Идея инструмента — сократить ручное копирование текстовых обозначений и координат из CAD-чертежа.</p></article><article class="card"><div class="num">INTEROPERABILITY</div><h3>Обмен через CSV</h3><p>CSV служит простым промежуточным форматом для переноса данных между инженерными и офисными инструментами.</p></article><article class="card"><div class="num">IMPLEMENTATION</div><h3>AutoLISP</h3><p>Репозиторий описывает утилиту как AutoLISP-инструмент экспорта выбранных текстовых меток и WCS-координат.</p></article></div><div class="notice"><strong>Примечание о текущем содержимом репозитория.</strong> На момент оформления в репозитории доступны README и эта обзорная страница. Файл исходного AutoLISP-скрипта и проверенный пример CSV в репозитории пока не представлены; поэтому здесь не приводятся неподтверждённые команды запуска, API-функции или ссылки на скачивание.</div></section></main>
+<footer><span>AutoCAD Coordinate Exporter · Technical project overview</span><a href="https://github.com/ekatmoz88-alt/autocad-coordinate-exporter">GitHub repository ↗</a></footer></div></body></html>
